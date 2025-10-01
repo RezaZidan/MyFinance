@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MyFinance - Transaksi</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f5f6fa;
+        padding-bottom: 70px;
+        font-family: "Segoe UI", sans-serif;
+      }
+      .card {
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+      .bottom-navbar {
+        background-color: white;
+        border-top: 1px solid #ddd;
+        padding: 5px 0;
+      }
+      .bottom-navbar a {
+        color: #6c757d;
+        text-decoration: none;
+      }
+      .bottom-navbar a.active {
+        color: #0d6efd;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar Atas -->
+    <nav class="navbar top-navbar p-3 bg-primary text-white shadow-sm">
+      <div class="container-fluid d-flex align-items-center">
+        <i class="bi bi-wallet2 fs-3 me-2"></i>
+        <span class="h5 mb-0">MyFinance</span>
+      </div>
+    </nav>
+
+    <div class="container mt-3">
+      <h3 class="fw-bold">Transaksi</h3>
+      <p class="text-muted">
+        Kelola catatan pemasukan, pengeluaran, dan tukar dompet Anda
+      </p>
+
+      <!-- Button Tambah Transaksi -->
+      <button
+        class="btn btn-primary w-100 mb-3"
+        data-bs-toggle="modal"
+        data-bs-target="#addTransaksiModal"
+      >
+        <i class="bi bi-plus-circle"></i> Tambah Transaksi
+      </button>
+
+      <!-- Daftar Transaksi -->
+      <h6 class="fw-bold mb-2">Daftar Transaksi</h6>
+      <div id="transaksiList"></div>
+    </div>
+
+    <!-- Modal Tambah Transaksi -->
+    <div
+      class="modal fade"
+      id="addTransaksiModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="formAddTransaksi">
+            <div class="modal-header">
+              <h5 class="modal-title">Tambah Transaksi</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <!-- Jenis -->
+              <div class="mb-3">
+                <label class="form-label">Jenis Transaksi</label>
+                <select class="form-select" id="jenisTransaksi" required>
+                  <option value="">Pilih Jenis</option>
+                  <option value="pemasukan">Pemasukan</option>
+                  <option value="pengeluaran">Pengeluaran</option>
+                  <option value="tuker">Tuker Dompet</option>
+                </select>
+              </div>
+
+              <!-- Tanggal -->
+              <div class="mb-3">
+                <label class="form-label">Tanggal</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="tanggalTransaksi"
+                  required
+                />
+              </div>
+
+              <!-- Judul -->
+              <div class="mb-3">
+                <label class="form-label">Judul</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="judulTransaksi"
+                  required
+                />
+              </div>
+
+              <!-- Kategori -->
+              <div class="mb-3">
+                <label class="form-label">Kategori</label>
+                <select
+                  class="form-select"
+                  id="kategoriTransaksi"
+                  required
+                ></select>
+              </div>
+
+              <!-- Jumlah -->
+              <div class="mb-3">
+                <label class="form-label">Jumlah (Rp)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="jumlahTransaksi"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <!-- Dompet -->
+              <div class="mb-3" id="dompetWrapper">
+                <label class="form-label">Dompet</label>
+                <select
+                  class="form-select"
+                  id="dompetTransaksi"
+                  required
+                ></select>
+              </div>
+
+              <!-- Tuker Dompet -->
+              <div class="mb-3 d-none" id="tukerWrapper">
+                <label class="form-label">Tukar ke Dompet</label>
+                <select class="form-select" id="dompetTujuan"></select>
+              </div>
+
+              <!-- Deskripsi -->
+              <div class="mb-3">
+                <label class="form-label">Deskripsi (Opsional)</label>
+                <textarea
+                  class="form-control"
+                  id="deskripsiTransaksi"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary w-100">
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navbar Bawah -->
+    <nav class="navbar fixed-bottom bottom-navbar">
+      <div class="container-fluid d-flex justify-content-around">
+        <a href="index.html" class="text-center"
+          ><i class="bi bi-house fs-4"></i
+        ></a>
+        <a href="dompet.html" class="text-center"
+          ><i class="bi bi-wallet2 fs-4"></i
+        ></a>
+        <a href="transaksi.html" class="text-center active"
+          ><i class="bi bi-plus-circle-fill fs-2 text-primary"></i
+        ></a>
+        <a href="budget.html" class="text-center"
+          ><i class="bi bi-pie-chart fs-4"></i
+        ></a>
+        <a href="histori.html" class="text-center"
+          ><i class="bi bi-clock-history fs-4"></i
+        ></a>
+      </div>
+    </nav>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Ambil data dompet & transaksi dari localStorage
+      let dompet = JSON.parse(localStorage.getItem("dompet")) || [];
+      let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
+
+      function saveData() {
+        localStorage.setItem("dompet", JSON.stringify(dompet));
+        localStorage.setItem("transaksi", JSON.stringify(transaksi));
+      }
+
+      // Kategori
+      const kategoriPemasukan = [
+        "Gaji",
+        "Beasiswa",
+        "Dikasih",
+        "Hadiah",
+        "Penjualan",
+        "Invest",
+        "Bunga",
+        "Pinjaman Masuk",
+        "Pengembalian Dana",
+        "Lainnya",
+      ];
+      const kategoriPengeluaran = [
+        "Makan",
+        "Minum",
+        "Transportasi",
+        "Belanja Harian",
+        "Kado",
+        "Pendidikan",
+        "Hiburan",
+        "Invest",
+        "Perawatan Diri",
+        "Darurat",
+        "Pacaran",
+      ];
+
+      function loadKategori(jenis) {
+        const kategori = document.getElementById("kategoriTransaksi");
+        kategori.innerHTML = "";
+        let list = [];
+        if (jenis === "pemasukan") list = kategoriPemasukan;
+        if (jenis === "pengeluaran") list = kategoriPengeluaran;
+        if (jenis === "tuker") {
+          kategori.innerHTML = `<option value="Tukar Dompet">Tukar Dompet</option>`;
+          return;
+        }
+        list.forEach((k) => {
+          kategori.innerHTML += `<option value="${k}">${k}</option>`;
+        });
+      }
+
+      // Render Dompet
+      function renderDompetDropdown() {
+        const dompetDropdown = document.getElementById("dompetTransaksi");
+        const dompetTujuan = document.getElementById("dompetTujuan");
+        dompetDropdown.innerHTML = "";
+        dompetTujuan.innerHTML = "";
+        dompet.forEach((d, i) => {
+          dompetDropdown.innerHTML += `<option value="${i}">${
+            d.nama
+          } (Rp ${d.saldo.toLocaleString()})</option>`;
+          dompetTujuan.innerHTML += `<option value="${i}">${
+            d.nama
+          } (Rp ${d.saldo.toLocaleString()})</option>`;
+        });
+      }
+
+      // Render Transaksi
+      function renderTransaksi() {
+        const list = document.getElementById("transaksiList");
+        list.innerHTML = "";
+        transaksi.forEach((t, index) => {
+          list.innerHTML += `
+          <div class="card mb-2">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="fw-bold">${t.judul} (${t.jenis})</div>
+                  <small class="text-muted">${t.tanggal} | ${t.kategori} | ${
+            t.dompetNama
+          }</small><br>
+                  ${t.deskripsi ? `<small>${t.deskripsi}</small>` : ""}
+                </div>
+                <div class="text-end">
+                  <div class="fw-bold ${
+                    t.jenis === "pemasukan"
+                      ? "text-success"
+                      : t.jenis === "pengeluaran"
+                      ? "text-danger"
+                      : "text-primary"
+                  }">
+                    ${
+                      t.jenis === "pengeluaran"
+                        ? "-"
+                        : t.jenis === "pemasukan"
+                        ? "+"
+                        : "⇆"
+                    } Rp ${t.jumlah.toLocaleString()}
+                  </div>
+                  <button class="btn btn-sm btn-outline-danger mt-2" onclick="hapusTransaksi(${index})">
+                    <i class="bi bi-trash"></i> Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        });
+      }
+
+      // Hapus Transaksi
+      function hapusTransaksi(index) {
+        const t = transaksi[index];
+        if (!t) return;
+
+        // Kembalikan saldo sesuai jenis
+        let dompetAsalIndex = dompet.findIndex((d) =>
+          t.dompetNama.includes(d.nama)
+        );
+        if (t.jenis === "pemasukan" && dompetAsalIndex >= 0) {
+          dompet[dompetAsalIndex].saldo -= t.jumlah;
+        } else if (t.jenis === "pengeluaran" && dompetAsalIndex >= 0) {
+          dompet[dompetAsalIndex].saldo += t.jumlah;
+        } else if (t.jenis === "tuker") {
+          let [asal, tujuan] = t.dompetNama.split(" → ");
+          let asalIndex = dompet.findIndex((d) => d.nama === asal);
+          let tujuanIndex = dompet.findIndex((d) => d.nama === tujuan);
+          if (asalIndex >= 0) dompet[asalIndex].saldo += t.jumlah;
+          if (tujuanIndex >= 0) dompet[tujuanIndex].saldo -= t.jumlah;
+        }
+
+        transaksi.splice(index, 1);
+        saveData();
+        renderDompetDropdown();
+        renderTransaksi();
+      }
+
+      // Event ganti jenis transaksi
+      document
+        .getElementById("jenisTransaksi")
+        .addEventListener("change", function () {
+          loadKategori(this.value);
+          if (this.value === "tuker") {
+            document.getElementById("dompetWrapper").classList.remove("d-none");
+            document.getElementById("tukerWrapper").classList.remove("d-none");
+          } else {
+            document.getElementById("dompetWrapper").classList.remove("d-none");
+            document.getElementById("tukerWrapper").classList.add("d-none");
+          }
+        });
+
+      // Tambah Transaksi
+      document
+        .getElementById("formAddTransaksi")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const jenis = document.getElementById("jenisTransaksi").value;
+          const tanggal = document.getElementById("tanggalTransaksi").value;
+          const judul = document.getElementById("judulTransaksi").value;
+          const kategori = document.getElementById("kategoriTransaksi").value;
+          const jumlah = parseInt(
+            document.getElementById("jumlahTransaksi").value
+          );
+          const deskripsi = document.getElementById("deskripsiTransaksi").value;
+
+          if (dompet.length === 0) {
+            alert("Tambahkan dompet terlebih dahulu!");
+            return;
+          }
+
+          let dompetIndex = parseInt(
+            document.getElementById("dompetTransaksi").value
+          );
+          let dompetNama = dompet[dompetIndex].nama;
+
+          if (jenis === "pemasukan") {
+            dompet[dompetIndex].saldo += jumlah;
+          } else if (jenis === "pengeluaran") {
+            if (jumlah > dompet[dompetIndex].saldo) {
+              alert("Saldo dompet tidak mencukupi!");
+              return;
+            }
+            dompet[dompetIndex].saldo -= jumlah;
+          } else if (jenis === "tuker") {
+            let dompetTujuanIndex = parseInt(
+              document.getElementById("dompetTujuan").value
+            );
+            if (dompetTujuanIndex === dompetIndex) {
+              alert("Dompet tujuan harus berbeda!");
+              return;
+            }
+            if (jumlah > dompet[dompetIndex].saldo) {
+              alert("Saldo dompet asal tidak mencukupi!");
+              return;
+            }
+            dompet[dompetIndex].saldo -= jumlah;
+            dompet[dompetTujuanIndex].saldo += jumlah;
+            dompetNama =
+              dompet[dompetIndex].nama + " → " + dompet[dompetTujuanIndex].nama;
+          }
+
+          transaksi.unshift({
+            jenis,
+            tanggal,
+            judul,
+            kategori,
+            jumlah,
+            dompetNama,
+            deskripsi,
+          });
+          saveData();
+          renderDompetDropdown();
+          renderTransaksi();
+
+          e.target.reset();
+          bootstrap.Modal.getInstance(
+            document.getElementById("addTransaksiModal")
+          ).hide();
+        });
+
+      // Render awal
+      renderDompetDropdown();
+      renderTransaksi();
+    </script>
+  </body>
+</html>

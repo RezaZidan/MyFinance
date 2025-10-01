@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MyFinance - Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f5f6fa;
+        padding-bottom: 70px;
+        font-family: "Segoe UI", sans-serif;
+      }
+      .top-navbar {
+        background: linear-gradient(45deg, #0d6efd, #2b8cff);
+        color: white;
+      }
+      .saldo-box {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #0d6efd;
+      }
+      .card {
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+      .transaction-item {
+        background: #fff;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        border: 1px solid #eee;
+      }
+      .bottom-navbar {
+        background-color: white;
+        border-top: 1px solid #ddd;
+        padding: 5px 0;
+      }
+      .bottom-navbar a {
+        color: #6c757d;
+        text-decoration: none;
+      }
+      .bottom-navbar a.active {
+        color: #0d6efd;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar Atas -->
+    <nav class="navbar top-navbar p-3">
+      <div class="container-fluid d-flex align-items-center">
+        <i class="bi bi-wallet2 fs-3 me-2"></i>
+        <span class="h5 mb-0">MyFinance</span>
+      </div>
+    </nav>
+
+    <div class="container mt-3">
+      <!-- Total Saldo -->
+      <div class="card mb-3 text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Total Saldo</h6>
+          <div id="totalSaldo" class="saldo-box">Rp 0</div>
+        </div>
+      </div>
+
+      <!-- Daftar Dompet -->
+      <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">
+          <i class="bi bi-wallet2"></i> Dompet
+        </div>
+        <div class="card-body" id="dompetList"></div>
+      </div>
+
+      <!-- Pemasukan -->
+      <div class="card mb-3 text-success text-center">
+        <div class="card-body">
+          <i class="bi bi-arrow-down-circle-fill fs-2"></i>
+          <h6>Pemasukan</h6>
+          <div id="totalPemasukan" class="fs-5 fw-bold">Rp 0</div>
+        </div>
+      </div>
+
+      <!-- Pengeluaran -->
+      <div class="card mb-3 text-danger text-center">
+        <div class="card-body">
+          <i class="bi bi-arrow-up-circle-fill fs-2"></i>
+          <h6>Pengeluaran</h6>
+          <div id="totalPengeluaran" class="fs-5 fw-bold">Rp 0</div>
+        </div>
+      </div>
+
+      <!-- Laporan -->
+      <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">
+          <i class="bi bi-bar-chart"></i> Laporan
+        </div>
+        <div class="card-body">
+          <div class="row g-2 mb-3">
+            <div class="col">
+              <label for="startDate" class="form-label small">Dari</label>
+              <input type="date" id="startDate" class="form-control" />
+            </div>
+            <div class="col">
+              <label for="endDate" class="form-label small">Sampai</label>
+              <input type="date" id="endDate" class="form-control" />
+            </div>
+          </div>
+          <div class="row text-center">
+            <div class="col">
+              <small class="text-muted">Pemasukan</small>
+              <div id="laporanPemasukan" class="fw-bold text-success">Rp 0</div>
+            </div>
+            <div class="col">
+              <small class="text-muted">Pengeluaran</small>
+              <div id="laporanPengeluaran" class="fw-bold text-danger">
+                Rp 0
+              </div>
+            </div>
+            <div class="col">
+              <small class="text-muted">Selisih</small>
+              <div id="laporanSelisih" class="fw-bold">Rp 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target -->
+      <div class="card mb-3">
+        <div
+          class="card-header d-flex justify-content-between align-items-center bg-light fw-bold"
+        >
+          <span><i class="bi bi-bullseye"></i> Target</span>
+          <a href="budget.html" class="small text-decoration-none"
+            >Lihat semua</a
+          >
+        </div>
+        <div class="card-body" id="targetPreview"></div>
+      </div>
+
+      <!-- Transaksi Terbaru -->
+      <div class="card mb-3">
+        <div
+          class="card-header d-flex justify-content-between align-items-center bg-light fw-bold"
+        >
+          <span><i class="bi bi-clock-history"></i> Transaksi Terbaru</span>
+          <a href="histori.html" class="small text-decoration-none"
+            >Lihat semua</a
+          >
+        </div>
+        <div class="card-body" id="transaksiTerbaru"></div>
+      </div>
+    </div>
+
+    <!-- Navbar Bawah -->
+    <nav class="navbar fixed-bottom bottom-navbar">
+      <div class="container-fluid d-flex justify-content-around">
+        <a href="index.html" class="text-center active"
+          ><i class="bi bi-house fs-4"></i
+        ></a>
+        <a href="dompet.html" class="text-center"
+          ><i class="bi bi-wallet2 fs-4"></i
+        ></a>
+        <a href="transaksi.html" class="text-center"
+          ><i class="bi bi-plus-circle-fill fs-2 text-primary"></i
+        ></a>
+        <a href="budget.html" class="text-center"
+          ><i class="bi bi-pie-chart fs-4"></i
+        ></a>
+        <a href="histori.html" class="text-center"
+          ><i class="bi bi-clock-history fs-4"></i
+        ></a>
+      </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let dompet = JSON.parse(localStorage.getItem("dompet")) || [
+        { nama: "Cash", saldo: 0 },
+      ];
+      let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
+      let target = JSON.parse(localStorage.getItem("target")) || [];
+
+      function formatRp(num) {
+        return "Rp " + num.toLocaleString("id-ID");
+      }
+
+      function renderHome() {
+        // Total Saldo
+        let totalSaldo = dompet.reduce((sum, d) => sum + d.saldo, 0);
+        document.getElementById("totalSaldo").innerText = formatRp(totalSaldo);
+
+        // Daftar dompet
+        let dompetList = document.getElementById("dompetList");
+        dompetList.innerHTML = "";
+        dompet.forEach((d) => {
+          dompetList.innerHTML += `<div class="d-flex justify-content-between mb-2">
+            <span>${d.nama}</span><span class="fw-bold">${formatRp(
+            d.saldo
+          )}</span>
+          </div>`;
+        });
+
+        // Hitung pemasukan/pengeluaran total
+        let pemasukan = transaksi
+          .filter((t) => t.jenis === "pemasukan")
+          .reduce((s, t) => s + t.jumlah, 0);
+        let pengeluaran = transaksi
+          .filter((t) => t.jenis === "pengeluaran")
+          .reduce((s, t) => s + t.jumlah, 0);
+        document.getElementById("totalPemasukan").innerText =
+          formatRp(pemasukan);
+        document.getElementById("totalPengeluaran").innerText =
+          formatRp(pengeluaran);
+
+        // Render laporan default (tanpa filter)
+        renderLaporan();
+
+        // Render target preview (maks 3)
+        let targetPreview = document.getElementById("targetPreview");
+        targetPreview.innerHTML = "";
+        target.slice(0, 3).forEach((t) => {
+          let current = 0;
+          t.dompetIndex.forEach((idx) => {
+            if (dompet[idx]) current += dompet[idx].saldo;
+          });
+
+          let progress = Math.min((current / t.nominal) * 100, 100);
+
+          targetPreview.innerHTML += `
+            <div class="mb-2">
+              <b>${t.nama}</b><br/>
+              <small class="text-muted">Target: ${formatRp(
+                t.nominal
+              )} | Deadline: ${t.tanggal}</small>
+              <div class="progress mt-1" style="height: 8px;">
+                <div class="progress-bar ${
+                  progress >= 100 ? "bg-success" : "bg-primary"
+                }" role="progressbar" style="width: ${progress}%"></div>
+              </div>
+              <small>Saat ini: ${formatRp(current)} (${progress.toFixed(
+            1
+          )}%)</small>
+            </div>
+          `;
+        });
+        if (target.length === 0) {
+          targetPreview.innerHTML =
+            "<small class='text-muted'>Belum ada target</small>";
+        }
+
+        // Transaksi terbaru (max 5)
+        let terbaru = document.getElementById("transaksiTerbaru");
+        terbaru.innerHTML = "";
+        transaksi.slice(0, 5).forEach((t) => {
+          terbaru.innerHTML += `
+          <div class="transaction-item d-flex justify-content-between">
+            <div>
+              <b>${t.judul}</b> 
+              <span class="badge ${
+                t.jenis === "pemasukan" ? "bg-success" : "bg-danger"
+              }">${t.jenis}</span><br/>
+              <small class="text-muted">${t.dompetNama} | ${t.tanggal}</small>
+            </div>
+            <div class="fw-bold ${
+              t.jenis === "pemasukan" ? "text-success" : "text-danger"
+            }">
+              ${t.jenis === "pemasukan" ? "+" : "-"} ${formatRp(t.jumlah)}
+            </div>
+          </div>`;
+        });
+      }
+
+      function renderLaporan() {
+        let start = document.getElementById("startDate").value;
+        let end = document.getElementById("endDate").value;
+
+        let filtered = transaksi;
+        if (start) filtered = filtered.filter((t) => t.tanggal >= start);
+        if (end) filtered = filtered.filter((t) => t.tanggal <= end);
+
+        let pemasukan = filtered
+          .filter((t) => t.jenis === "pemasukan")
+          .reduce((s, t) => s + t.jumlah, 0);
+        let pengeluaran = filtered
+          .filter((t) => t.jenis === "pengeluaran")
+          .reduce((s, t) => s + t.jumlah, 0);
+
+        document.getElementById("laporanPemasukan").innerText =
+          formatRp(pemasukan);
+        document.getElementById("laporanPengeluaran").innerText =
+          formatRp(pengeluaran);
+        document.getElementById("laporanSelisih").innerText = formatRp(
+          pemasukan - pengeluaran
+        );
+      }
+
+      // Event listener untuk filter laporan
+      document
+        .getElementById("startDate")
+        .addEventListener("change", renderLaporan);
+      document
+        .getElementById("endDate")
+        .addEventListener("change", renderLaporan);
+
+      renderHome();
+    </script>
+  </body>
+</html>

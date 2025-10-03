@@ -46,7 +46,17 @@
     </nav>
 
     <div class="container mt-3">
-      <h6 class="fw-bold mb-2">Semua Histori Transaksi</h6>
+      <h6 class="fw-bold mb-2">Histori Transaksi</h6>
+
+      <!-- Search Box (Tanggal) -->
+      <div class="input-group mb-3">
+        <span class="input-group-text"
+          ><i class="bi bi-calendar-date"></i
+        ></span>
+        <input type="date" id="searchDate" class="form-control" />
+      </div>
+
+      <!-- List Histori -->
       <div id="historiList"></div>
     </div>
 
@@ -74,19 +84,24 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Ambil data transaksi real dari localStorage
       let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
 
-      function renderHistori() {
+      function renderHistori(filterDate = "") {
         const list = document.getElementById("historiList");
         list.innerHTML = "";
 
-        if (transaksi.length === 0) {
-          list.innerHTML = `<p class="text-muted text-center mt-5">Belum ada transaksi.</p>`;
+        // Filter berdasarkan tanggal
+        let filtered = transaksi.filter((t) => {
+          if (!filterDate) return true; // jika belum dipilih tanggal, tampilkan semua
+          return t.tanggal === filterDate;
+        });
+
+        if (filtered.length === 0) {
+          list.innerHTML = `<p class="text-muted text-center mt-5">Tidak ada transaksi pada tanggal ini.</p>`;
           return;
         }
 
-        transaksi.forEach((t) => {
+        filtered.forEach((t) => {
           let simbol =
             t.jenis === "pemasukan"
               ? "+"
@@ -114,7 +129,7 @@
                   ${t.deskripsi ? `<small>${t.deskripsi}</small>` : ""}
                 </div>
                 <div class="fw-bold ${warna}">
-                  ${simbol} Rp ${t.jumlah.toLocaleString()}
+                  ${simbol} Rp ${t.jumlah.toLocaleString("id-ID")}
                 </div>
               </div>
             </div>
@@ -122,6 +137,11 @@
           `;
         });
       }
+
+      // Event listener untuk filter tanggal
+      document.getElementById("searchDate").addEventListener("input", (e) => {
+        renderHistori(e.target.value);
+      });
 
       renderHistori();
     </script>

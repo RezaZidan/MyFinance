@@ -162,96 +162,76 @@
       </div>
 
       <!-- Section Kategori -->
-      <div class="container mt-4">
-        <h6 class="fw-bold mb-2">Kategori</h6>
-        <p class="text-muted">Kelola kategori pemasukan dan pengeluaran</p>
-
-        <button
-          class="btn btn-sm btn-primary mb-3"
-          data-bs-toggle="modal"
-          data-bs-target="#kategoriModal"
-        >
-          <i class="bi bi-plus-circle"></i> Tambah Kategori
-        </button>
-
-        <div id="kategoriList"></div>
-      </div>
-
-      <!-- Modal Tambah Kategori -->
-      <div class="modal fade" id="kategoriModal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Tambah Kategori Baru</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form id="formKategori">
-                <div class="mb-3">
-                  <label class="form-label">Jenis</label>
-                  <select class="form-select" id="kategoriJenis" required>
-                    <option value="">-- Pilih Jenis --</option>
-                    <option value="pemasukan">Pemasukan</option>
-                    <option value="pengeluaran">Pengeluaran</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Nama Kategori</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="kategoriNama"
-                    placeholder="Misal: Makan, Gaji..."
-                    required
-                  />
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                  Simpan
+      <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">
+          <i class="bi bi-tags"></i> Kategori
+        </div>
+        <div class="card-body">
+          <form id="formKategori" class="mb-3">
+            <div class="row g-2">
+              <div class="col-4">
+                <select
+                  class="form-select form-select-sm"
+                  id="kategoriJenis"
+                  required
+                >
+                  <option value="">Jenis</option>
+                  <option value="pemasukan">Pemasukan</option>
+                  <option value="pengeluaran">Pengeluaran</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  id="kategoriNama"
+                  placeholder="Nama kategori"
+                  required
+                />
+              </div>
+              <div class="col-2">
+                <button type="submit" class="btn btn-sm btn-primary w-100">
+                  <i class="bi bi-plus"></i>
                 </button>
-              </form>
+              </div>
             </div>
-          </div>
+          </form>
+
+          <!-- Daftar Kategori -->
+          <div id="kategoriList"></div>
         </div>
       </div>
 
       <script>
-        let kategori = JSON.parse(localStorage.getItem("kategori")) || [
-          { jenis: "pemasukan", nama: "Gaji" },
-          { jenis: "pengeluaran", nama: "Makan" },
-        ];
+        // Ambil kategori dari localStorage
+        let kategori = JSON.parse(localStorage.getItem("kategori")) || [];
 
         function renderKategori() {
           const list = document.getElementById("kategoriList");
           list.innerHTML = "";
 
           if (kategori.length === 0) {
-            list.innerHTML = `<p class="text-muted">Belum ada kategori.</p>`;
+            list.innerHTML = `<p class="text-muted small">Belum ada kategori.</p>`;
             return;
           }
 
           kategori.forEach((k, index) => {
             let badgeClass = k.jenis === "pemasukan" ? "success" : "danger";
             list.innerHTML += `
-        <div class="card mb-2">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <span class="badge bg-${badgeClass} text-capitalize">${k.jenis}</span>
-              <span class="ms-2 fw-bold">${k.nama}</span>
-            </div>
-            <button class="btn btn-sm btn-outline-danger" onclick="hapusKategori(${index})">
-              <i class="bi bi-trash"></i>
-            </button>
+        <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+          <div>
+            <span class="badge bg-${badgeClass} text-capitalize">${k.jenis}</span>
+            <span class="ms-2 fw-bold">${k.nama}</span>
           </div>
+          <button class="btn btn-sm btn-outline-danger" onclick="hapusKategori(${index})">
+            <i class="bi bi-trash"></i>
+          </button>
         </div>
       `;
           });
         }
 
-        // Simpan kategori baru
+        // Tambah kategori baru
         document
           .getElementById("formKategori")
           .addEventListener("submit", function (e) {
@@ -261,22 +241,22 @@
 
             if (!jenis || !nama) return;
 
+            // Tambah ke array dan simpan ke localStorage
             kategori.push({ jenis, nama });
             localStorage.setItem("kategori", JSON.stringify(kategori));
 
             renderKategori();
             e.target.reset();
-            bootstrap.Modal.getInstance(
-              document.getElementById("kategoriModal")
-            ).hide();
           });
 
+        // Hapus kategori
         function hapusKategori(index) {
           kategori.splice(index, 1);
           localStorage.setItem("kategori", JSON.stringify(kategori));
           renderKategori();
         }
 
+        // Render awal
         renderKategori();
       </script>
 

@@ -12,6 +12,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
         background-color: #f5f6fa;
@@ -50,6 +51,11 @@
       .bottom-navbar a.active {
         color: #0d6efd;
       }
+      #notifBulanan {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        font-style: italic;
+      }
     </style>
   </head>
   <body>
@@ -67,6 +73,17 @@
         <div class="card-body">
           <h6 class="text-muted">Total Saldo</h6>
           <div id="totalSaldo" class="saldo-box">Rp 0</div>
+        </div>
+      </div>
+
+      <!-- Ringkasan Bulanan (Chart) -->
+      <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">
+          <i class="bi bi-graph-up"></i> Ringkasan Bulanan
+        </div>
+        <div class="card-body">
+          <canvas id="chartBulanan" height="120"></canvas>
+          <div id="notifBulanan" class="text-muted text-center"></div>
         </div>
       </div>
 
@@ -137,7 +154,7 @@
           class="card-header d-flex justify-content-between align-items-center bg-light fw-bold"
         >
           <span><i class="bi bi-bullseye"></i> Target</span>
-          <a href="budget.html" class="small text-decoration-none"
+          <a href="target.html" class="small text-decoration-none"
             >Lihat semua</a
           >
         </div>
@@ -201,10 +218,10 @@
         dompetList.innerHTML = "";
         dompet.forEach((d) => {
           dompetList.innerHTML += `<div class="d-flex justify-content-between mb-2">
-            <span>${d.nama}</span><span class="fw-bold">${formatRp(
+          <span>${d.nama}</span><span class="fw-bold">${formatRp(
             d.saldo
           )}</span>
-          </div>`;
+        </div>`;
         });
 
         // Hitung pemasukan/pengeluaran total
@@ -219,8 +236,11 @@
         document.getElementById("totalPengeluaran").innerText =
           formatRp(pengeluaran);
 
-        // Render laporan default (tanpa filter)
+        // Render laporan default
         renderLaporan();
+
+        // Render chart bulanan
+        renderChartBulanan();
 
         // Render target preview (maks 3)
         let targetPreview = document.getElementById("targetPreview");
@@ -232,23 +252,22 @@
           });
 
           let progress = Math.min((current / t.nominal) * 100, 100);
-
           targetPreview.innerHTML += `
-            <div class="mb-2">
-              <b>${t.nama}</b><br/>
-              <small class="text-muted">Target: ${formatRp(
-                t.nominal
-              )} | Deadline: ${t.tanggal}</small>
-              <div class="progress mt-1" style="height: 8px;">
-                <div class="progress-bar ${
-                  progress >= 100 ? "bg-success" : "bg-primary"
-                }" role="progressbar" style="width: ${progress}%"></div>
-              </div>
-              <small>Saat ini: ${formatRp(current)} (${progress.toFixed(
+          <div class="mb-2">
+            <b>${t.nama}</b><br/>
+            <small class="text-muted">Target: ${formatRp(
+              t.nominal
+            )} | Deadline: ${t.tanggal}</small>
+            <div class="progress mt-1" style="height: 8px;">
+              <div class="progress-bar ${
+                progress >= 100 ? "bg-success" : "bg-primary"
+              }" role="progressbar" style="width: ${progress}%"></div>
+            </div>
+            <small>Saat ini: ${formatRp(current)} (${progress.toFixed(
             1
           )}%)</small>
-            </div>
-          `;
+          </div>
+        `;
         });
         if (target.length === 0) {
           targetPreview.innerHTML =
@@ -262,7 +281,7 @@
           terbaru.innerHTML += `
           <div class="transaction-item d-flex justify-content-between">
             <div>
-              <b>${t.judul}</b> 
+              <b>${t.judul}</b>
               <span class="badge ${
                 t.jenis === "pemasukan" ? "bg-success" : "bg-danger"
               }">${t.jenis}</span><br/>
@@ -301,7 +320,78 @@
         );
       }
 
-      // Event listener untuk filter laporan
+      // Chart Ringkasan Bulanan
+      function renderChartBulanan() {
+        let ctx = document.getElementById("chartBulanan").getContext("2d");
+
+        // Ambil bulan sekarang & bulan lalu
+        let now = new Date();
+        let bulanIni = now.getMonth() + 1;
+        let bulanLalu = bulanIni === 1 ? 12 : bulanIni - 1;
+        let tahun = now.getFullYear();
+
+        function sumByMonth(month, year, jenis) {
+          return transaksi
+            .filter((t) => {
+              let d = new Date(t.tanggal);
+              return (
+                t.jenis === jenis &&
+                d.getMonth() + 1 === month &&
+                d.getFullYear() === year
+              );
+            })
+            .reduce((s, t) => s + t.jumlah, 0);
+        }
+
+        let pemasukanIni = sumByMonth(bulanIni, tahun, "pemasukan");
+        let pengeluaranIni = sumByMonth(bulanIni, tahun, "pengeluaran");
+        let pemasukanLalu = sumByMonth(bulanLalu, tahun, "pemasukan");
+        let pengeluaranLalu = sumByMonth(bulanLalu, tahun, "pengeluaran");
+
+        // Chart
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Pemasukan", "Pengeluaran"],
+            datasets: [
+              {
+                label: "Bulan Ini",
+                data: [pemasukanIni, pengeluaranIni],
+                backgroundColor: ["#28a745", "#dc3545"],
+              },
+              {
+                label: "Bulan Lalu",
+                data: [pemasukanLalu, pengeluaranLalu],
+                backgroundColor: ["#7cd992", "#f28b82"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: "bottom" } },
+          },
+        });
+
+        // Notifikasi
+        let notif = "";
+        if (pengeluaranIni > pengeluaranLalu) {
+          let persen = (
+            ((pengeluaranIni - pengeluaranLalu) / (pengeluaranLalu || 1)) *
+            100
+          ).toFixed(1);
+          notif = `⚠️ Pengeluaran bulan ini naik ${persen}% dibanding bulan lalu.`;
+        } else if (pengeluaranIni < pengeluaranLalu) {
+          let persen = (
+            ((pengeluaranLalu - pengeluaranIni) / (pengeluaranLalu || 1)) *
+            100
+          ).toFixed(1);
+          notif = `✅ Pengeluaran bulan ini turun ${persen}% dibanding bulan lalu.`;
+        } else {
+          notif = "ℹ️ Pengeluaran bulan ini sama dengan bulan lalu.";
+        }
+        document.getElementById("notifBulanan").innerText = notif;
+      }
+
       document
         .getElementById("startDate")
         .addEventListener("change", renderLaporan);

@@ -58,6 +58,16 @@
       }
     </style>
   </head>
+  <script>
+    // Cek PIN setiap kali masuk halaman utama
+    const savedPin = localStorage.getItem("appPIN");
+    const loggedIn = sessionStorage.getItem("loggedIn"); // status login sementara (reset saat tab ditutup)
+
+    if (!savedPin || !loggedIn) {
+      window.location.href = "pin.html";
+    }
+  </script>
+
   <body>
     <!-- Navbar Atas -->
     <nav class="navbar top-navbar p-3">
